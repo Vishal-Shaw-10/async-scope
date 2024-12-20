@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="edba400d-bf92-4498-a46b-5196d3f354de" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="a12edb3f-bb78-4a58-9bae-6afcdfb97ec1" />
+	<flow name="async-scopeFlow" doc:id="7b4668f0-ef9c-4450-9586-f7d643e21611" >
+		<http:listener doc:name="Listener" doc:id="9fc838ca-cabd-4dec-916f-1fca65c975f1" config-ref="HTTP_Listener_config" path="async-scope"/>
+		<set-variable value="#[now()]" doc:name="Set Variable" doc:id="9569316c-4553-4ba6-8076-2ecb6ca7fd5a" variableName="startTime"/>
+		<async doc:name="Async" doc:id="0efe31eb-6a28-4af8-b461-3cdb589886ee" >
+			<http:request method="GET" doc:name="Request" doc:id="5c018904-b26a-4023-b1eb-d1176411d5d4" url="https://data.montgomerycountymd.gov/api/views/mmzv-x632/rows.csv?accessType=DOWNLOAD" outputMimeType="application/csv"/>
+			<file:write doc:name="Write" doc:id="a35e4333-ca1e-41f6-9816-37fc6e12526d" path="F:\mulesoft-testing-data\vehicle-data.csv\New Text Document.csv"/>
+			<logger level="INFO" doc:name="Logger" doc:id="218380f0-4081-4c56-8dab-b35331a5f700" message='#["data downloaded"]'/>
+		</async>
+		<set-payload value='#["time taken :" ++ now() - vars.startTime]' doc:name="Set Payload" doc:id="3ff51c12-5187-466f-b081-0bc7f9aaf7ce" />
+	</flow>
+</mule>
